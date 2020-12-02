@@ -1,8 +1,27 @@
 import React from "react";
+import axiosInstance from "./../axiosApi";
 
 export default class home extends React.Component {
 	constructor(props) {
 		super(props);
+
+		this.state = {
+			data: [],
+			loaded: false,
+			placeholder: "Loading",
+		};
+	}
+
+	componentDidMount() {
+		axiosInstance.get("/posts/").then(({ data }) => {
+			console.log(data);
+			this.setState(() => {
+				return {
+					data: data.results,
+					loaded: true,
+				};
+			});
+		});
 	}
 
 	render() {
