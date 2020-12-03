@@ -4,6 +4,7 @@ import { Switch, Route, Link } from "react-router-dom";
 import Login from "./components/login";
 import Signup from "./components/signup";
 import Home from "./components/home";
+import Post from "./components/post";
 import "./App.css";
 
 class App extends React.Component {
@@ -17,7 +18,7 @@ class App extends React.Component {
             </h2>
             <ul className="space-x-8 flex items-center text-sm font-medium h-full">
               <li className="nav_link">
-                <Link to="/home">Profile</Link>
+                <Link to="/posts/1">Profile</Link>
               </li>
               <li className="nav_link">
                 <Link to="/home">logout</Link>
@@ -33,10 +34,10 @@ class App extends React.Component {
         </header>
         <div>
           <Switch>
-            <Route path={"/login"} component={Login} />
-            <Route path={"/signup"} component={Signup} />
-            <Route path={"/home"} component={Home} />
-            <Route path={"/"} component={Home} />
+            <Route exact path={"/login"} component={Login} />
+            <Route exact path={"/signup"} component={Signup} />
+            <Route exact path={["/home", "/"]} component={Home} />
+            <Route path="/posts/:id" component={Post} />
           </Switch>
         </div>
       </div>
