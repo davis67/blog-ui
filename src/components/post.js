@@ -8,9 +8,12 @@ export default class post extends React.Component {
 
 		this.state = {
 			currentPost: null,
+			comment_description: "",
 		};
 
 		this.getPost = this.getPost.bind(this);
+		this.handleCommentSubmit = this.handleCommentSubmit.bind(this);
+		this.handleCommentChange = this.handleCommentChange.bind(this);
 	}
 
 	componentDidMount() {
@@ -30,6 +33,28 @@ export default class post extends React.Component {
 			});
 	}
 
+	handleCommentChange(event) {
+		this.setState({ [event.target.name]: event.target.value });
+	}
+
+	handleCommentSubmit(event) {
+		event.preventDefault();
+		let id = this.props.match.params.id;
+		let description = this.state.comment_description;
+
+		HttpService.addcomment(id, description)
+			.then((response) => {
+				console.log(response);
+				// this.setState(() => {
+				// 	return { currentPost: response.data };
+				// });
+				// console.log("current", this.state);
+			})
+			.catch((e) => {
+				console.log(e);
+			});
+	}
+
 	render() {
 		const { currentPost } = this.state;
 		console.log("currentPost", this.state.currentPost);
@@ -41,11 +66,12 @@ export default class post extends React.Component {
 						<div className="w-3/4 mx-auto container">
 							<div className=" absolute top-0 pt-16 w-full">
 								<h1 className="text-2xl text-white">{currentPost.title}</h1>
-								<h4 className="h4 bg-gray-400 w-1/6 text-center px-2 py-1">
-									category name
-								</h4>
 								<div className="flex items-center mt-3">
-									<img src="" className="h-24 w-24 rounded-full" alt="" />
+									<img
+										src={currentPost.author.avatar}
+										className="h-24 w-24 rounded-full"
+										alt=""
+									/>
 									<div className="ml-4">
 										<h2 className="text-xl text-white">
 											<a href="">{currentPost.author.username}</a>
@@ -58,7 +84,6 @@ export default class post extends React.Component {
 							</div>
 						</div>
 					</div>
-
 					<div className="w-3/4 mx-auto mt-10 container">
 						<div>
 							<div>{currentPost.description}</div>
@@ -76,70 +101,80 @@ export default class post extends React.Component {
 							</div>
 						</div>
 					</div>
-					<div className="w-3/4 mx-auto mt-10 container">
-						<h2 className="text-2xl">Comments</h2>
+					{currentPost.comments.map((comment, index) => (
+						<div key={index} className="w-3/4 mx-auto mt-10 container">
+							<h2 className="text-2xl">Comments</h2>
 
-						<ul className="list-none">
-							<li>
-								Comment description
-								<div className="my-4">
-									<a href="" className="bg-gray-400 px-4 py-3 hover:bg-gray-300">
-										Edit
-									</a>
-									<a href="" className="bg-gray-400 px-4 py-3 hover:bg-gray-300">
-										Delete
-									</a>
-								</div>
-								<h1>By Author</h1>
-							</li>
-						</ul>
-
-						<div className="ml-12 mt-10">
-							<h2 className="text-2xl">Replies</h2>
 							<ul className="list-none">
 								<li>
-									reply description
-									<a href="">edit</a>
-									<a href="">delete</a>
-									<h1>By Author</h1>
+									{comment.description}
+									<div className="my-4">
+										<a
+											href=""
+											className="bg-gray-400 px-4 py-3 hover:bg-gray-300"
+										>
+											Edit
+										</a>
+										<a
+											href=""
+											className="bg-gray-400 px-4 py-3 hover:bg-gray-300"
+										>
+											Delete
+										</a>
+									</div>
+									<h1>By {comment.author.username}</h1>
 								</li>
 							</ul>
-						</div>
 
-						<form
-							method="POST"
-							className="ml-12 mt-10 mb-4"
-							action="{% url 'posts:add-reply' pk=comment.id %}"
-						>
-							<div>
-								<textarea
-									name="description"
-									id=""
-									cols="50"
-									rows="5"
-									required
-								></textarea>
+							<div className="ml-12 mt-10">
+								<h2 className="text-2xl">Replies</h2>
+								<ul className="list-none">
+									<li>
+										reply description
+										<a href="">edit</a>
+										<a href="">delete</a>
+										<h1>By Author</h1>
+									</li>
+								</ul>
 							</div>
-							<button
-								type="submit"
-								className="bg-gray-400 px-4 py-3 hover:bg-gray-300"
+
+							<form
+								method="POST"
+								className="ml-12 mt-10 mb-4"
+								action="{% url 'posts:add-reply' pk=comment.id %}"
 							>
-								Reply
-							</button>
-						</form>
+								<div>
+									<textarea
+										name="description"
+										id=""
+										cols="50"
+										rows="5"
+										required
+									></textarea>
+								</div>
+								<button
+									type="submit"
+									className="bg-gray-400 px-4 py-3 hover:bg-gray-300"
+								>
+									Reply
+								</button>
+							</form>
+						</div>
+					))}
 
-						<ul>
-							<li>No Comments</li>
-						</ul>
-					</div>
-
-					<form method="POST" className="w-3/4 mx-auto  container" action="">
+					<form
+						method="POST"
+						className="w-3/4 mx-auto  container"
+						onSubmit={this.handleCommentSubmit}
+					>
 						<div>
 							<textarea
-								name="description"
+								name="comment_description"
 								id=""
 								cols="50"
 								rows="10"
+								value={this.state.comment_description}
+								onChange={this.handleCommentChange}
 								required
 							></textarea>
 						</div>
@@ -147,7 +182,7 @@ export default class post extends React.Component {
 							type="submit"
 							className="bg-gray-400 px-4 py-3 hover:bg-gray-300 mb-4"
 						>
-							Comment
+							Add Comment
 						</button>
 					</form>
 				</div>

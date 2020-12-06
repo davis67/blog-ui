@@ -9,7 +9,7 @@ export default class signup extends React.Component {
 			username: "",
 			email: "",
 			gender: "",
-			photo: "",
+			avatar: "",
 			confirm_password: "",
 			password: "",
 		};
@@ -23,12 +23,14 @@ export default class signup extends React.Component {
 
 	handleSubmit(event) {
 		event.preventDefault();
+		const data = new FormData();
+		data.append("username", this.state.username);
+		data.append("email", this.state.email);
+		data.append("gender", this.state.gender);
+		data.append("avatar", this.state.avatar);
+		data.append("password", this.state.password);
 		try {
-			const response = axiosInstance.post("/auth/register/", {
-				username: this.state.username,
-				email: this.state.email,
-				password: this.state.password,
-			});
+			const response = axiosInstance.post("/auth/register/", data);
 		} catch (error) {
 			console.log("error", error);
 		}
@@ -36,7 +38,7 @@ export default class signup extends React.Component {
 
 	render() {
 		return (
-			<div className="w-3/4 mx-auto">
+			<div>
 				<form onSubmit={this.handleSubmit}>
 					<div>
 						<div className="mt-8 pt-8 sm:mt-5 sm:pt-10">
@@ -114,7 +116,7 @@ export default class signup extends React.Component {
 
 								<div className="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
 									<label
-										htmlFor="photo"
+										htmlFor="avatar"
 										className="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
 									>
 										Avatar
@@ -122,9 +124,14 @@ export default class signup extends React.Component {
 									<div className="mt-1 sm:mt-0 sm:col-span-2">
 										<div className="max-w-lg rounded-md shadow-sm">
 											<input
-												id="photo"
+												id="avatar"
 												type="file"
-												name="photo"
+												name="avatar"
+												onChange={(e) =>
+													this.setState({
+														[e.target.name]: e.target.files[0],
+													})
+												}
 												className="appearance-none block w-full text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
 											/>
 										</div>

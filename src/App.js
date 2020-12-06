@@ -5,12 +5,11 @@ import Login from "./components/login";
 import Signup from "./components/signup";
 import Home from "./components/home";
 import Post from "./components/post";
-import "./App.css";
 
 class App extends React.Component {
   render() {
     return (
-      <div className="App">
+      <div>
         <header className="container max-w-full  border-b border-gray-400">
           <div className="w-3/4 mx-auto flex items-center justify-between h-20 inset-0 px-6 ">
             <h2>

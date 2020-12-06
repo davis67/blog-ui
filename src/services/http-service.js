@@ -24,6 +24,10 @@ class HttpService {
   findByCategory(category) {
     return http.get(`/posts?category=${category}`);
   }
+
+  addcomment(id, description) {
+    return http.post(`/posts/comment/${id}/`, { description: description });
+  }
 }
 
 export default new HttpService();
