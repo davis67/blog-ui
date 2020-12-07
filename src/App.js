@@ -1,47 +1,69 @@
-import logo from "./logo.svg";
 import React from "react";
-import { Switch, Route, Link } from "react-router-dom";
-import Login from "./components/login";
-import Signup from "./components/signup";
-import Home from "./components/home";
-import Post from "./components/post";
+import { Route, Link, BrowserRouter as Router } from "react-router-dom";
+
+import { history } from "./_helpers/history";
+import { authenticationService } from "./_services/authentication.service";
+import { PrivateRoute } from "./components/privateRoute";
+import { HomePage } from "./HomePage/HomePage";
+import { LoginPage } from "./LoginPage/LoginPage";
+import Profile from "./components/profile";
 
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      currentUser: null,
+    };
+  }
+
+  componentDidMount() {
+    authenticationService.currentUser.subscribe((x) => this.setState({ currentUser: x }));
+  }
+
+  logout() {
+    authenticationService.logout();
+    history.push("/login");
+  }
+
   render() {
+    const { currentUser } = this.state;
     return (
-      <div>
-        <header className="container max-w-full  border-b border-gray-400">
-          <div className="w-3/4 mx-auto flex items-center justify-between h-20 inset-0 px-6 ">
-            <h2>
-              <Link to="/">Blog</Link>
-            </h2>
-            <ul className="space-x-8 flex items-center text-sm font-medium h-full">
-              <li className="nav_link">
-                <Link to="/posts/1">Profile</Link>
-              </li>
-              <li className="nav_link">
-                <Link to="/home">logout</Link>
-              </li>
-              <li className="nav_link">
-                <Link to="/login">login</Link>
-              </li>
-              <li className="nav_link">
-                <Link to="/signup">signup</Link>
-              </li>
-            </ul>
-          </div>
-        </header>
+      <Router history={history}>
         <div>
-          <Switch>
-            <Route exact path={"/login"} component={Login} />
-            <Route exact path={"/signup"} component={Signup} />
-            <Route exact path={["/home", "/"]} component={Home} />
-            <Route path="/posts/:id" component={Post} />
-          </Switch>
+          <nav className="navbar navbar-expand navbar-dark bg-dark">
+            <div className="navbar-nav">
+              <Link to="/" className="nav-item nav-link">
+                Home
+              </Link>
+              <Link to="/profile" className="nav-item nav-link">
+                Profile
+              </Link>
+              {currentUser && (
+                <div className="d-flex">
+                  <a onClick={this.logout} className="nav-item nav-link">
+                    Logout
+                  </a>
+                </div>
+              )}
+            </div>
+          </nav>
+
+          <div className="jumbotron">
+            <div className="container">
+              <div className="row">
+                <div className="col-md-6 offset-md-3">
+                  <PrivateRoute exact path="/" component={HomePage} />
+                  <Route path="/login" component={LoginPage} />
+                  <Route path="/profile" component={Profile} />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </Router>
     );
   }
 }
 
-export default App;
+export { App };

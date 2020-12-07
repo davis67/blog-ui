@@ -32,7 +32,8 @@ export default class signup extends React.Component {
 		try {
 			const response = axiosInstance.post("/auth/register/", data);
 		} catch (error) {
-			console.log("error", error);
+			// console.log("error", error);
+			throw error;
 		}
 	}
 
