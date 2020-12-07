@@ -10,6 +10,10 @@ export default class profile extends React.Component {
 	}
 
 	render() {
-		return <div>profile</div>;
+		return (
+			<div className="w-3/4  pl-6 mx-auto mt-10 flex">
+				<p>profile</p>
+			</div>
+		);
 	}
 }

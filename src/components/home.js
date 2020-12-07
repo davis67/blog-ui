@@ -70,36 +70,14 @@ export default class home extends React.Component {
 				<div className="bg-gray-200">
 					<div className="w-3/4 pl-6 mx-auto h-20 flex">
 						<div className="w-full flex items-center">
-							<ul className="w-3/4 flex justify-between items-center">
-								<li className="hover:text-gray-600">
-									<a href="">Latest Posts</a>
-								</li>
-								<li>
-									<a className="hover:text-gray-600" href="#">
-										Technology
-									</a>
-								</li>
-								<li>
-									<a className="hover:text-gray-600" href="#">
-										Business
-									</a>
-								</li>
-								<li>
-									<a className="hover:text-gray-600" href="#">
-										Enviromnent
-									</a>
-								</li>
-								<li>
-									<a className="hover:text-gray-600" href="#">
-										Culture
-									</a>
-								</li>
-							</ul>
 							<div className="w-1/4 pl-16 flex justify-center">
 								<h3>
-									<a href="#" className="bg-gray-400 px-4 py-3 hover:bg-gray-300">
+									<Link
+										to="/add-post"
+										className="bg-gray-400 px-4 py-3 hover:bg-gray-300"
+									>
 										Add Post
-									</a>
+									</Link>
 								</h3>
 							</div>
 						</div>
@@ -107,6 +85,7 @@ export default class home extends React.Component {
 				</div>
 
 				<div className="w-3/4 pl-6 mx-auto mt-10 flex">
+					<p>Home </p>
 					<div className="w-full flex flex-wrap">
 						{posts &&
 							posts.map((post, index) => (

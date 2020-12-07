@@ -39,8 +39,8 @@ export default class signup extends React.Component {
 
 	render() {
 		return (
-			<div>
-				<form onSubmit={this.handleSubmit}>
+			<div className="w-3/4 pl-6 mx-auto mt-10 flex">
+				<form onSubmit={this.handleSubmit} className="w-full">
 					<div>
 						<div className="mt-8 pt-8 sm:mt-5 sm:pt-10">
 							<div className="space-x-8 ">
