@@ -15,13 +15,19 @@ axiosInstance.interceptors.response.use(
 	(error) => {
 		const originalRequest = error.config;
 		if (error.response.status == 401 && error.response.statusText === "Unauthorized") {
-			const refresh_token = localStorage.getItem("refresh_token");
+			const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+			console.log("cuuremntuser", currentUser.tokens.refresh);
 
 			return axiosInstance
-				.post("/token/refresh/", { refresh: refresh_token })
+				.post("auth/token/refresh/", { refresh: currentUser.tokens.refresh })
 				.then((response) => {
-					localStorage.setItem("access_token", response.data.access);
-					localStorage.setItem("refresh_token", response.data.refresh);
+					console.log(response.data);
+					currentUser.tokens.access = response.data.access;
+					localStorage.removeItem("currentUser");
+					localStorage.setItem("currentUser", JSON.stringify(currentUser));
+					// localStorage.setItem("access_token", response.data.access);
+					// localStorage.setItem("refresh_token", response.data.refresh);
 
 					axiosInstance.defaults.headers["Authorization"] = "JWT " + response.data.access;
 					originalRequest.headers["Authorization"] = "JWT " + response.data.access;

@@ -1,5 +1,6 @@
 import React from "react";
 import HttpService from "../services/http-service";
+import { authenticationService } from "../services/authentication-service";
 
 import { Link } from "react-router-dom";
 
@@ -14,6 +15,8 @@ export default class home extends React.Component {
 			loaded: false,
 			currentPost: null,
 			currentIndex: -1,
+			currentUser: authenticationService.currentUserValue,
+			isAuthenticated: authenticationService.isAuthenticated,
 			placeholder: "Loading",
 		};
 	}
@@ -43,24 +46,6 @@ export default class home extends React.Component {
 			currentPost: null,
 			currentIndex: -1,
 		});
-	}
-
-	setActivePost(tutorial, index) {
-		this.setState({
-			currentPost: tutorial,
-			currentIndex: index,
-		});
-	}
-
-	removeAllPosts() {
-		HttpService.deleteAll()
-			.then((response) => {
-				console.log(response.data);
-				this.refreshList();
-			})
-			.catch((e) => {
-				console.log(e);
-			});
 	}
 
 	render() {

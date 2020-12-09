@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import HttpService from "../services/http-service";
+import { authenticationService } from "../services/authentication-service";
 
 export default class post extends React.Component {
 	constructor(props) {
@@ -9,6 +10,8 @@ export default class post extends React.Component {
 		this.state = {
 			currentPost: null,
 			comment_description: "",
+			currentUser: authenticationService.currentUserValue,
+			isAuthenticated: authenticationService.isAuthenticated,
 		};
 
 		this.getPost = this.getPost.bind(this);
@@ -23,6 +26,7 @@ export default class post extends React.Component {
 	getPost(id) {
 		HttpService.get(id)
 			.then((response) => {
+				console.log(response);
 				this.setState(() => {
 					return { currentPost: response.data };
 				});
@@ -44,7 +48,7 @@ export default class post extends React.Component {
 
 		HttpService.addcomment(id, description)
 			.then((response) => {
-				console.log(response);
+				// console.log(response);
 				// this.setState(() => {
 				// 	return { currentPost: response.data };
 				// });
@@ -55,9 +59,82 @@ export default class post extends React.Component {
 			});
 	}
 
+	handleUpdatingOfAComment(comment) {
+		let editOrDeleteComment;
+		if (
+			this.state.isAuthenticated &&
+			comment.author.username == this.state.currentUser.username
+		) {
+			editOrDeleteComment = (
+				<div className="my-4">
+					<a href="" className="bg-gray-400 px-4 py-3 hover:bg-gray-300">
+						Edit
+					</a>
+					<a href="" className="bg-gray-400 px-4 py-3 hover:bg-gray-300">
+						Delete
+					</a>
+				</div>
+			);
+		}
+
+		return editOrDeleteComment;
+	}
+
 	render() {
-		const { currentPost } = this.state;
-		console.log("currentPost", this.state.currentPost);
+		const { currentPost, currentUser, isAuthenticated } = this.state;
+		console.log(currentPost);
+		let handleEditingOfAPost, handlePublishingOfAPost, handleCommentingOfAPost;
+
+		if (
+			currentPost &&
+			currentUser &&
+			currentPost.author &&
+			currentPost.author.username == currentUser.username
+		) {
+			handleEditingOfAPost = (
+				<div className="flex">
+					<Link to="/" className="bg-gray-400 px-4 py-3 hover:bg-gray-300">
+						Edit
+					</Link>
+					<a href="" className="bg-gray-400 px-4 py-3 hover:bg-gray-300">
+						Delete
+					</a>
+				</div>
+			);
+		}
+
+		if (currentUser && currentUser.is_superuser == true) {
+			handlePublishingOfAPost = (
+				<a href="" className="bg-gray-400 px-4 py-3 hover:bg-gray-300">
+					Publish
+				</a>
+			);
+		}
+
+		if (isAuthenticated) {
+			handleCommentingOfAPost = (
+				<form
+					method="POST"
+					className="w-3/4 mx-auto  container"
+					onSubmit={this.handleCommentSubmit}
+				>
+					<div>
+						<textarea
+							name="comment_description"
+							id=""
+							cols="50"
+							rows="10"
+							value={this.state.comment_description}
+							onChange={this.handleCommentChange}
+							required
+						></textarea>
+					</div>
+					<button type="submit" className="bg-gray-400 px-4 py-3 hover:bg-gray-300 mb-4">
+						Add Comment
+					</button>
+				</form>
+			);
+		}
 		return (
 			currentPost && (
 				<div>
@@ -89,15 +166,8 @@ export default class post extends React.Component {
 							<div>{currentPost.description}</div>
 
 							<div className="mt-4">
-								<a href="" className="bg-gray-400 px-4 py-3 hover:bg-gray-300">
-									Edit
-								</a>
-								<a href="" className="bg-gray-400 px-4 py-3 hover:bg-gray-300">
-									Delete
-								</a>
-								<a href="" className="bg-gray-400 px-4 py-3 hover:bg-gray-300">
-									Publish
-								</a>
+								{handleEditingOfAPost}
+								{handlePublishingOfAPost}
 							</div>
 						</div>
 					</div>
@@ -108,83 +178,14 @@ export default class post extends React.Component {
 							<ul className="list-none">
 								<li>
 									{comment.description}
-									<div className="my-4">
-										<a
-											href=""
-											className="bg-gray-400 px-4 py-3 hover:bg-gray-300"
-										>
-											Edit
-										</a>
-										<a
-											href=""
-											className="bg-gray-400 px-4 py-3 hover:bg-gray-300"
-										>
-											Delete
-										</a>
-									</div>
+									{this.handleUpdatingOfAComment(comment)}
 									<h1>By {comment.author.username}</h1>
 								</li>
 							</ul>
-
-							<div className="ml-12 mt-10">
-								<h2 className="text-2xl">Replies</h2>
-								<ul className="list-none">
-									<li>
-										reply description
-										<a href="">edit</a>
-										<a href="">delete</a>
-										<h1>By Author</h1>
-									</li>
-								</ul>
-							</div>
-
-							<form
-								method="POST"
-								className="ml-12 mt-10 mb-4"
-								action="{% url 'posts:add-reply' pk=comment.id %}"
-							>
-								<div>
-									<textarea
-										name="description"
-										id=""
-										cols="50"
-										rows="5"
-										required
-									></textarea>
-								</div>
-								<button
-									type="submit"
-									className="bg-gray-400 px-4 py-3 hover:bg-gray-300"
-								>
-									Reply
-								</button>
-							</form>
 						</div>
 					))}
 
-					<form
-						method="POST"
-						className="w-3/4 mx-auto  container"
-						onSubmit={this.handleCommentSubmit}
-					>
-						<div>
-							<textarea
-								name="comment_description"
-								id=""
-								cols="50"
-								rows="10"
-								value={this.state.comment_description}
-								onChange={this.handleCommentChange}
-								required
-							></textarea>
-						</div>
-						<button
-							type="submit"
-							className="bg-gray-400 px-4 py-3 hover:bg-gray-300 mb-4"
-						>
-							Add Comment
-						</button>
-					</form>
+					{handleCommentingOfAPost}
 				</div>
 			)
 		);

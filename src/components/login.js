@@ -2,13 +2,13 @@ import React from "react";
 import axiosInstance from "./../axiosApi";
 import * as Yup from "yup";
 
-import { authenticationService } from "../_services/authentication.service";
+import { authenticationService } from "../services/authentication-service";
 
 export default class login extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			username: "",
+			email: "qacizejek@mailinator.com",
 			password: "",
 		};
 		this.handleChange = this.handleChange.bind(this);
@@ -25,17 +25,35 @@ export default class login extends React.Component {
 
 	async handleSubmit(event) {
 		event.preventDefault();
-		authenticationService.login(this.state.username, this.state.password).then(
-			(user) => {
-				const { from } = this.props.location.state || {
-					from: { pathname: "/" },
-				};
-				this.props.history.push(from);
-			},
-			(error) => {
-				console.log(error);
-			},
-		);
+		authenticationService
+			.login({ email: this.state.email, password: this.state.password })
+			.then(
+				(user) => {
+					const { from } = this.props.location.state || {
+						from: { pathname: "/" },
+					};
+					this.props.history.push(from);
+				},
+				(error) => {
+					console.log(error);
+				},
+			);
+		// .then(
+		// 	(response) => {
+		// 		axiosInstance.defaults.headers["Authorization"] =
+		// 			"JWT " + response.data.tokens.access;
+		// 		localStorage.setItem("access_token", response.data.tokens.access);
+		// 		localStorage.setItem("refresh_token", response.data.tokens.refresh);
+		// 		console.log("response", response);
+		// 		const { from } = this.props.location.state || {
+		// 			from: { pathname: "/" },
+		// 		};
+		// 		this.props.history.push(from);
+		// 	},
+		// 	(error) => {
+		// 		console.log(error);
+		// 	},
+		// );
 		// try {
 		// const response = await axiosInstance.post("/auth/login/", {
 		// 	email: this.state.email,
@@ -74,18 +92,18 @@ export default class login extends React.Component {
 							<div className="mt-6 sm:mt-5">
 								<div className="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
 									<label
-										htmlFor="username"
+										htmlFor="email"
 										className="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
 									>
-										username address
+										email address
 									</label>
 									<div className="mt-1 sm:mt-0 sm:col-span-2">
 										<div className="max-w-lg rounded-md shadow-sm">
 											<input
-												id="username"
-												name="username"
+												id="email"
+												name="email"
 												type="text"
-												value={this.state.username}
+												value={this.state.email}
 												onChange={this.handleChange}
 												className="appearance-none block w-full text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
 											/>

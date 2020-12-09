@@ -2,7 +2,7 @@ import logo from "./logo.svg";
 import React from "react";
 import { Switch, Route, Link, BrowserRouter as Router } from "react-router-dom";
 import { PrivateRoute } from "./components/privateRoute";
-import { authenticationService } from "./_services/authentication.service";
+import { authenticationService } from "./services/authentication-service";
 import { history } from "./_helpers/history";
 import Login from "./components/login";
 import Signup from "./components/signup";
